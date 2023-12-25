@@ -53,8 +53,12 @@ public class TestController {
      * 4. Unit tests
      */
     @GetMapping("/clients/{clientId}/records")
-    public List<Object> getRecordsByClientId(@PathVariable long clientId) {
-        return null;
+    public ResponseEntity<List<RecordEntity>> getRecordsByClientId(@PathVariable long clientId) {
+        try {
+            return ResponseEntity.ok(recordsService.getRecordsByClientId(clientId));
+        } catch (EntityNotFoundException ex) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /**
