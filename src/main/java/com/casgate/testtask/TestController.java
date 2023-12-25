@@ -4,12 +4,17 @@ import com.casgate.testtask.entity.ClientEntity;
 import com.casgate.testtask.entity.RecordEntity;
 import com.casgate.testtask.service.ClientService;
 import com.casgate.testtask.service.RecordsService;
+
 import java.util.List;
+
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.persistence.EntityNotFoundException;
 
 @RestController
 @AllArgsConstructor
@@ -18,18 +23,26 @@ public class TestController {
     private ClientService clientService;
 
     @GetMapping("/clients")
-    public List<ClientEntity> getClients() {return clientService.findAll();}
+    public List<ClientEntity> getClients() {
+        return clientService.findAll();
+    }
 
     @GetMapping("/records")
-    public List<RecordEntity> getRecords() {return recordsService.findAll();}
+    public List<RecordEntity> getRecords() {
+        return recordsService.findAll();
+    }
 
     /**
      * 1. Method must return client object by id or 404 http status code
      * 2. Unit tests
      */
     @GetMapping("/clients/{id}")
-    public Object getClientById(@PathVariable long id) {
-        return null;
+    public ResponseEntity<ClientEntity> getClientById(@PathVariable long id) {
+        try {
+            return ResponseEntity.ok(clientService.getClientById(id));
+        } catch (EntityNotFoundException ex) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /**
