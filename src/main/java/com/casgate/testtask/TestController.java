@@ -4,9 +4,6 @@ import com.casgate.testtask.entity.ClientEntity;
 import com.casgate.testtask.entity.RecordEntity;
 import com.casgate.testtask.service.ClientService;
 import com.casgate.testtask.service.RecordsService;
-
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
