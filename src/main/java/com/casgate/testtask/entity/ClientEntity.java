@@ -3,9 +3,13 @@ package com.casgate.testtask.entity;
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import lombok.Data;
+
+import lombok.*;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Entity(name = "CLIENT")
 public class ClientEntity {
     @Id
