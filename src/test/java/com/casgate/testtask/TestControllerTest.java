@@ -88,4 +88,21 @@ public class TestControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is("client1")))
                 .andDo(print());
     }
+    @Test
+    public void getRecordsByClientId() throws Exception {
+        listOfRecords.add(RecordEntity.builder().id(1L).title("record 1").description("'desc 1")
+                .createDate(LocalDateTime.now()).lastRead(LocalDateTime.now().plusSeconds(1)).userId(1L).build());
+        listOfRecords.add(RecordEntity.builder().id(2L).title("record 2").description("'desc 2")
+                .createDate(LocalDateTime.now()).lastRead(LocalDateTime.now().plusSeconds(1)).userId(1L).build());
+        listOfRecords.add(RecordEntity.builder().id(3L).title("record 3").description("'desc 3")
+                .createDate(LocalDateTime.now()).lastRead(LocalDateTime.now().plusSeconds(1)).userId(1L).build());
+
+        given(recordsService.getRecordsByClientId(clientEntity.getId())).willReturn(listOfRecords);
+
+        var response = mockMvc.perform(get("/clients/{clientId}/records", clientEntity.getId()));
+        response.andDo(print());
+        response.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.size()",is(listOfRecords.size())));
+    }
 }
