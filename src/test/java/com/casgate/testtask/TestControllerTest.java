@@ -4,6 +4,8 @@ import com.casgate.testtask.entity.ClientEntity;
 import com.casgate.testtask.entity.RecordEntity;
 import com.casgate.testtask.service.ClientService;
 import com.casgate.testtask.service.RecordsService;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,17 +13,18 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.hamcrest.CoreMatchers.is;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(TestController.class)
@@ -37,6 +40,11 @@ public class TestControllerTest {
     @MockBean
     private RecordsService recordsService;
     private final List<RecordEntity> listOfRecords = new ArrayList<>();
+    private final ClientEntity clientEntity = new ClientEntity(1L, "client1",LocalDateTime.now());
+    @BeforeEach
+    public void setUp() {
+        given(clientService.getClientById(clientEntity.getId())).willReturn(clientEntity);
+    }
 
     @Test
     public void getClientAll() throws Exception {
@@ -65,5 +73,15 @@ public class TestControllerTest {
         response.andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(jsonPath("$.size()", is(listOfRecords.size())));
+    }
+
+    @Test
+    public void getClientById () throws Exception {
+        var response = mockMvc.perform(get("/clients/{id}", clientEntity.getId()));
+        response.andDo(print());
+        response.andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is("client1")))
+                .andDo(print());
     }
 }
