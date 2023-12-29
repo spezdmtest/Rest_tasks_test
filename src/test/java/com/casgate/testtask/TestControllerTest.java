@@ -13,14 +13,17 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -40,7 +43,8 @@ public class TestControllerTest {
     @MockBean
     private RecordsService recordsService;
     private final List<RecordEntity> listOfRecords = new ArrayList<>();
-    private final ClientEntity clientEntity = new ClientEntity(1L, "client1",LocalDateTime.now());
+    private final ClientEntity clientEntity = new ClientEntity(1L, "client1", LocalDateTime.now());
+
     @BeforeEach
     public void setUp() {
         given(clientService.getClientById(clientEntity.getId())).willReturn(clientEntity);
@@ -66,6 +70,9 @@ public class TestControllerTest {
                 .createDate(LocalDateTime.now()).lastRead(LocalDateTime.now().plusSeconds(1)).build());
         listOfRecords.add(RecordEntity.builder().id(2L).title("record 2").description("'desc 2")
                 .createDate(LocalDateTime.now()).lastRead(LocalDateTime.now().plusSeconds(1)).build());
+        listOfRecords.add(RecordEntity.builder().id(3L).title("record 3").description("'desc 3")
+                .createDate(LocalDateTime.now()).lastRead(LocalDateTime.now().plusSeconds(1)).build());
+
         given(recordsService.findAll()).willReturn(listOfRecords);
 
         var response = mockMvc.perform(get("/records", listOfRecords));
@@ -76,7 +83,7 @@ public class TestControllerTest {
     }
 
     @Test
-    public void getClientById () throws Exception {
+    public void getClientById() throws Exception {
         var response = mockMvc.perform(get("/clients/{id}", clientEntity.getId()));
         response.andDo(print());
         response.andExpect(status().isOk())
