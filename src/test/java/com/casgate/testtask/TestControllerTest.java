@@ -15,12 +15,14 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -88,6 +90,16 @@ public class TestControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is("client1")))
                 .andDo(print());
     }
+
+    @Test
+    public void getClientById_entityNotFound() throws Exception {
+        long clientId = 2L;
+        given(clientService.getClientById(clientId)).willThrow(EntityNotFoundException.class);
+        var response = mockMvc.perform(get("/clients/{id}", clientId));
+        response.andDo(print());
+        response.andExpect(status().isNotFound());
+    }
+
     @Test
     public void getRecordsByClientId() throws Exception {
         listOfRecords.add(RecordEntity.builder().id(1L).title("record 1").description("'desc 1")
@@ -103,6 +115,15 @@ public class TestControllerTest {
         response.andDo(print());
         response.andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(jsonPath("$.size()",is(listOfRecords.size())));
+                .andExpect(jsonPath("$.size()", is(listOfRecords.size())));
+    }
+
+    @Test
+    public void getRecordsByClientId_entityNotFound() throws Exception {
+        long clientId = 2L;
+        given(recordsService.getRecordsByClientId(clientId)).willThrow(EntityNotFoundException.class);
+        var response = mockMvc.perform(get("/clients/{clientId}/records", clientId));
+        response.andExpect(status().isNotFound())
+                .andDo(print());
     }
 }
