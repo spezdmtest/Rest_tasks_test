@@ -9,6 +9,7 @@ import org.mockito.Mockito;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public class ClientServiceTest {
     private ClientRepository clientRepository;
@@ -23,16 +24,30 @@ public class ClientServiceTest {
     }
 
     @Test
-    public void findAll() {
+    public void findClientAll() {
         Mockito.when(clientRepository.findAll()).thenReturn(clientEntity);
 
-        List<ClientEntity> clients = clientService.findAll();
+        var clients = clientService.findAll();
 
         Assertions.assertNotNull(clients);
         Assertions.assertEquals(clientEntity, clients);
     }
 
+    @Test
+    public void findClientById() {
+        long id = 1L;
+        var expectedClient = ClientEntity.builder()
+                .id(id)
+                .name("client1")
+                .createDate(LocalDateTime.now())
+                .build();
+        Mockito.when(clientRepository.findById(id)).thenReturn(Optional.ofNullable(expectedClient));
 
+        var actualClient = clientService.getClientById(id);
+
+        Assertions.assertNotNull(actualClient);
+        Assertions.assertEquals(expectedClient, actualClient);
+    }
 }
 
 
