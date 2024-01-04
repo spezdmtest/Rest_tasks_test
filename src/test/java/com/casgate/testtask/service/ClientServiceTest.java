@@ -24,7 +24,6 @@ public class ClientServiceTest {
 
     @Test
     public void findAll() {
-
         Mockito.when(clientRepository.findAll()).thenReturn(clientEntity);
 
         List<ClientEntity> clients = clientService.findAll();
