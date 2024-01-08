@@ -5,14 +5,21 @@ import com.casgate.testtask.repository.ClientRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+@ExtendWith(MockitoExtension.class)
 public class ClientServiceTest {
+    @Mock
     private ClientRepository clientRepository;
+    @InjectMocks
     private ClientService clientService;
 
     List<ClientEntity> clientEntity = List.of(new ClientEntity(1L, "client1", LocalDateTime.now()));
