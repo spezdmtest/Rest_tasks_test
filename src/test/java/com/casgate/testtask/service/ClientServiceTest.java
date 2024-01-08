@@ -45,8 +45,9 @@ public class ClientServiceTest {
 
         var actualClient = clientService.getClientById(id);
 
-        Assertions.assertNotNull(actualClient);
-        Assertions.assertEquals(expectedClient, actualClient);
+        Assertions.assertEquals(expectedClient, actualClient, "ClientEntity objects should be equal");
+        Assertions.assertNotNull(actualClient , "ClientEntity should not be null");
+
     }
 }
 
