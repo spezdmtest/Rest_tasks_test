@@ -10,33 +10,33 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@Service
-@AllArgsConstructor
-public class RecordsService {
+    @Service
+    @AllArgsConstructor
+    public class RecordsService {
 
-    private RecordRepository recordRepository;
+        private RecordRepository recordRepository;
 
-    public List<RecordEntity> findAll() {
-        return recordRepository.findAll();
+        public List<RecordEntity> findAll() {
+            return recordRepository.findAll();
+        }
+
+        public List<RecordEntity> getRecordsByClientId(long clientId) {
+
+            var recordEntitiesByUserId = recordRepository.findRecordEntitiesByUserId(clientId);
+            AtomicInteger counter = new AtomicInteger(0);
+            recordEntitiesByUserId.forEach(record -> {
+                var currentTime = LocalDateTime.now().plusSeconds(counter.getAndIncrement());
+                record.setLastRead(currentTime);
+                var oldLastRead = record.getLastRead();
+                record.setLastRead(currentTime);
+                record.setLastRead(oldLastRead);
+                recordRepository.save(record);
+            });
+
+            recordEntitiesByUserId.sort(Comparator.comparing(RecordEntity::getLastRead,
+                            Comparator.nullsLast(Comparator.reverseOrder()))
+                    .thenComparing(RecordEntity::getCreateDate));
+
+            return recordEntitiesByUserId;
+        }
     }
-
-    public List<RecordEntity> getRecordsByClientId(long clientId) {
-
-        var recordEntitiesByUserId = recordRepository.findRecordEntitiesByUserId(clientId);
-        AtomicInteger counter = new AtomicInteger(0);
-        recordEntitiesByUserId.forEach(record -> {
-            var currentTime = LocalDateTime.now().plusSeconds(counter.getAndIncrement());
-            record.setLastRead(currentTime);
-            var oldLastRead = record.getLastRead();
-            record.setLastRead(currentTime);
-            record.setLastRead(oldLastRead);
-            recordRepository.save(record);
-        });
-
-        recordEntitiesByUserId.sort(Comparator.comparing(RecordEntity::getLastRead,
-                        Comparator.nullsLast(Comparator.reverseOrder()))
-                .thenComparing(RecordEntity::getCreateDate));
-
-        return recordEntitiesByUserId;
-    }
-}
